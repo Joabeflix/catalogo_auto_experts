@@ -4,9 +4,10 @@ from tkinter import ttk
 # Criando a janela principal
 root = tk.Tk()
 root.title("Tabela de Dados")
+root.geometry('500x500')
 
 # Criando o Treeview
-columns = ("Produto", "Quantidade", "Preço")
+columns = ("Montadora", "Veículo", "Modelo", "Ano")
 tree = ttk.Treeview(root, columns=columns, show="headings")
 
 # Configurando as colunas
@@ -16,15 +17,14 @@ for col in columns:
 
 # Inserindo dados
 dados = [
-    ("Parafuso", 50, "R$ 1,50"),
-    ("Porca", 30, "R$ 0,80"),
-    ("Arruela", 100, "R$ 0,30"),
+    ("Volkswagen", "Gol", "G3", "1989, 1990, 1991, 1992, 1993"),
+    ("Ford", "Ranger", "ST", "1992, 1993")
 ]
 
 for item in dados:
     tree.insert("", tk.END, values=item)
 
-tree.pack(pady=20)
+tree.place(x=0, y=0)
 
 # Iniciando o loop da interface
 root.mainloop()
