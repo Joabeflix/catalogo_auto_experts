@@ -2,6 +2,7 @@ import requests
 import os
 from dotenv import load_dotenv
 from token_gerador import gerar_arquivo_token, ler_txt_token
+import json
 
 
 # token_acesso = get_access_token(client_key_value, client_secret_value)
@@ -20,11 +21,29 @@ def retorno_dados(part_number):
     if response.status_code == 200:
         return response
     
-def filtro_dados_json(part_number):
+def filtro_dados_json(part_number, filtro_json, item_filtro=None):
+    data = retorno_dados(part_number).json()
 
-        data = retorno_dados(part_number).json()
-        veiculos = data['data'][0]['aplicacoes'][0]['descricaoFrota']
-        return veiculos
+    # Avaliação do caminho fornecido no filtro
+    try:
+        retorno = eval(f"data{filtro_json}")
+    except Exception as e:
+        return f"Erro ao acessar dados com o filtro: {e}"
 
-print(filtro_dados_json('AP 30460'))
+    # Filtro adicional baseado no campo "item", se fornecido
+    if item_filtro:
+        filtrados = [dado for dado in retorno if dado.get("item") == item_filtro]
+        retorno = filtrados[0]['descricao']
+        return retorno
 
+    return retorno
+
+# Exemplo de uso + Caminhos no json (Lembrando que passamos o caminho bruto e
+# Junto com a função enviamos o item que vamos puxar)
+
+cod_porduto_teste = "PA908ASF"
+print(f'Marca: {filtro_dados_json(cod_porduto_teste, "['data'][0]['marca']['nome']")}')
+print(f'Aplicação: {filtro_dados_json(cod_porduto_teste, "['data'][0]['aplicacoes'][0]['descricaoFrota']")}')
+print(f'Peso: {filtro_dados_json(cod_porduto_teste, "['data'][0]['especificacoes']", "Peso bruto")}')
+print(f'Prazo de garantia: {filtro_dados_json(cod_porduto_teste, "['data'][0]['especificacoes']", "Prazo de garantia")} Meses')
+print(f'Posição: {filtro_dados_json(cod_porduto_teste, "['data'][0]['especificacoes']", "Lado")}')
