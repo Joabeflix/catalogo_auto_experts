@@ -31,19 +31,22 @@ def filtro_dados_json(part_number, filtro_json, item_filtro=None):
         return f"Erro ao acessar dados com o filtro: {e}"
 
     # Filtro adicional baseado no campo "item", se fornecido
-    if item_filtro:
-        filtrados = [dado for dado in retorno if dado.get("item") == item_filtro]
-        retorno = filtrados[0]['descricao']
-        return retorno
-
+    try:
+        if item_filtro:
+            filtrados = [dado for dado in retorno if dado.get("item") == item_filtro]
+            retorno = filtrados[0]['descricao']
+            return retorno
+    except IndexError:
+        return f'"{item_filtro}" indisponível.'
     return retorno
 
 # Exemplo de uso + Caminhos no json (Lembrando que passamos o caminho bruto e
 # Junto com a função enviamos o item que vamos puxar)
 
-cod_porduto_teste = "PA908ASF"
+cod_porduto_teste = input("Digite o código que deseja pesquisar: ")
+cod_porduto_teste = cod_porduto_teste.replace(' ', '').replace('  ', '')
+
 print(f'Marca: {filtro_dados_json(cod_porduto_teste, "['data'][0]['marca']['nome']")}')
 print(f'Aplicação: {filtro_dados_json(cod_porduto_teste, "['data'][0]['aplicacoes'][0]['descricaoFrota']")}')
 print(f'Peso: {filtro_dados_json(cod_porduto_teste, "['data'][0]['especificacoes']", "Peso bruto")}')
-print(f'Prazo de garantia: {filtro_dados_json(cod_porduto_teste, "['data'][0]['especificacoes']", "Prazo de garantia")} Meses')
-print(f'Posição: {filtro_dados_json(cod_porduto_teste, "['data'][0]['especificacoes']", "Lado")}')
+
