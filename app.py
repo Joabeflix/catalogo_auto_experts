@@ -1,6 +1,4 @@
 import requests
-import os
-from dotenv import load_dotenv
 from token_gerador import gerar_arquivo_token, ler_txt_token
 import json
 
