@@ -13,6 +13,10 @@ integracao = IntegracaoGS(
 )
 
 
+
+
+
+
 class Interface:
     def __init__(self):
         self.dados_necessarios = ['cod marca', 'nome', 'marca', 'aplicacao', 'ean', 'peso']
