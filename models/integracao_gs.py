@@ -9,6 +9,7 @@ class IntegracaoGS:
         self.nome_aba=nome_aba
         pass
 
+# teste
     def conectar(self):
         try:
             gc = gspread.service_account(filename=self.conta_de_servico_json)
