@@ -87,15 +87,14 @@ class ImagemProduto():
         url = puxar_dados_api(self.codigo_produto, ['imagem_url'])['imagem_url']
         # exec(cod, ['imagem_url'])['imagem_url']
 
-        # Nome do arquivo para salvar a imagem
         nome_arquivo = f"temp/{self.codigo_produto}.jpg"
 
         try:
-            # Fazer a solicitação GET
+    
             resposta = requests.get(url)
-            # Verificar se a requisição foi bem-sucedida
+        
             if resposta.status_code == 200:
-                # Salvar o conteúdo da imagem em um arquivo
+        
                 with open(nome_arquivo, 'wb') as arquivo:
                     arquivo.write(resposta.content)
                 print(f"Imagem salva como {nome_arquivo}")
@@ -164,8 +163,6 @@ def puxar_dados_api(codigo_produto, dados_necessarios=[]):
     token_manager = TokenGerador()
     api_cliente = APICliente(token_manager)
     filtro = FiltroJSON()
-
-    # verificando se o json vem com os dados ou não e tratando o código com uma função dedicada
     response = api_cliente.obter_dados(codigo_produto)
     dados = response.json()
 
@@ -205,6 +202,10 @@ def puxar_dados_api(codigo_produto, dados_necessarios=[]):
                 'mapeamento': "['data'][0]['imagens'][0]['url']",
                 'mapeamento_secundario': False
             },
+            'cod_marca': {
+                'mapeamento': "['data'][0]['partNumber']",
+                'mapeamento_secundario': False
+            },
             'json_completo': {
                 'mapeamento': "['data']",
                 'mapeamento_secundario': False
@@ -231,8 +232,9 @@ def puxar_dados_api(codigo_produto, dados_necessarios=[]):
     return dict(lista_retorno)
 
 if __name__ == "__main__":
-    cod = 'C-5682'
-    url = puxar_dados_api(cod, ['nome', 'marca', 'aplicacao', 'ean', 'ncm', 'peso'])
+    cod = 'NBJ7016DP'
+    # url = puxar_dados_api(cod, ['nome', 'marca', 'aplicacao', 'ean', 'ncm', 'peso'])
+    url = puxar_dados_api(cod, ['cod_marca'])
     print(type(url))
 
     print(url)
