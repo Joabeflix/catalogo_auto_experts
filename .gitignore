@@ -3,4 +3,4 @@
 /venv_backup/
 *.txt
 __pycache__
-
+configs/conta_servico.json
