@@ -19,18 +19,30 @@ integracao = IntegracaoGS(
 
 class Interface:
     def __init__(self):
-        self.dados_necessarios = ['cod marca', 'nome', 'marca', 'aplicacao', 'ean', 'peso']
 
         self.root = ttk.Window(themename='darkly', title='Catálogo Auto Experts')
         self.root.geometry('1270x745')
 
         self.entrada_filtro = ttk.Entry(self.root, width=35)
         self.entrada_filtro.place(x=10, y=20)
+        self.planilha_google = integracao.conectar()
+        self.dados_necessarios = ['cod marca', 'nome', 'marca', 'aplicacao', 'ean', 'peso']
+
+        self.dados_atualizados = integracao.retorno_google_planilhas_pandas(planilha_google=self.planilha_google, dados_necessarios=self.dados_necessarios)
 
         self.tree_main = None
         self.carregar_arvore_de_dados()
 
+
         self.root.mainloop()
+
+    def atualizar_dados_interface(self):
+        self.dados_atualizados = integracao.retorno_google_planilhas_pandas(
+            planilha_google=self.planilha_googlee,
+            dados_necessarios=self.dados_necessarios
+        )
+        self.carregar_arvore_de_dados()
+        texto_no_console("Interface atualizada com novas informações.")
 
     
     def carregar_arvore_de_dados(self):
@@ -84,9 +96,8 @@ class Interface:
 
         self.tree_main.place(x=10, y=65, width=1250, height=450)
 
-
-
-
+        for row in self.dados_atualizados:
+            self.tree_main.insert("", "end", values=row)
 
 app = Interface()
 
