@@ -78,68 +78,16 @@ class FiltroJSON:
                 return f'"{item_filtro}" indisponível.'
         return retorno
     
-class ImagemProduto():
-    def __init__(self, codigo_produto=None):
-        self.codigo_produto = codigo_produto
-
-    def baixar_imagem(self):
-
-        url = puxar_dados_api(self.codigo_produto, ['imagem_url'])['imagem_url']
-        # exec(cod, ['imagem_url'])['imagem_url']
-
-        nome_arquivo = f"temp/{self.codigo_produto}.jpg"
-
-        try:
-    
-            resposta = requests.get(url)
-        
-            if resposta.status_code == 200:
-        
-                with open(nome_arquivo, 'wb') as arquivo:
-                    arquivo.write(resposta.content)
-                print(f"Imagem salva como {nome_arquivo}")
-            else:
-                print(f"Erro ao baixar a imagem: {resposta.status_code}")
-        except Exception as e:
-            print(f"Ocorreu um erro: {e}")
-
-    def mostrar_imagem(self, root):
-        # Criação de uma nova janela para exibição
-        janela = tk.Toplevel(root)
-        janela.title(f'Imagem produto: {self.codigo_produto}')
-        janela.minsize(width=500, height=500)
-        janela.maxsize(width=500, height=500)
-
-        # Carregar a imagem com Pillow
-        image_path = f'temp/{self.codigo_produto}.jpg'
-        try:
-            img = Image.open(image_path)
-            img = img.resize((500, 500))
-            tk_image = ImageTk.PhotoImage(img)
-
-            # Criar um widget Label para exibir a imagem
-            label = tk.Label(janela, image=tk_image)
-            label.image = tk_image  # Preserva a referência
-            label.pack()
-        except Exception as e:
-            print(f"Erro ao exibir a imagem: {e}")
-        
-    def limpar_imagens(self):
-        os.chdir('temp')
-        for imagem in os.listdir():
-            os.remove(imagem)
-        os.chdir('..')
-
-
 def acerto_codigo_produto(codigo_produto, indice=2):
     print(indice)
 
-    texto_saida = codigo_produto.replace(' ', '')
+    texto_saida = str(codigo_produto).replace(' ', '')
 
     print('Dentro do acerto')
     print(f'código atual é {texto_saida}')
 
     # Espaço após 2 letras
+
     lista_padrao_2 = ['MG', 'HG', 'AC']
     lista_padrao_3 = ['NKF']
     lista_padrao_4 = ['NCDE']
@@ -156,8 +104,7 @@ def acerto_codigo_produto(codigo_produto, indice=2):
         print('dentro do else:')
         indice+=1
         return acerto_codigo_produto(codigo_produto, indice)
-
-
+    
 def puxar_dados_api(codigo_produto, dados_necessarios=[]):
 
     token_manager = TokenGerador()
@@ -231,10 +178,83 @@ def puxar_dados_api(codigo_produto, dados_necessarios=[]):
 
     return dict(lista_retorno)
 
+
+class ImagemProduto():
+    def __init__(self, codigo_produto=None):
+        self.codigo_produto = codigo_produto
+
+    def baixar_imagem(self):
+
+        url = puxar_dados_api(self.codigo_produto, ['imagem_url'])['imagem_url']
+        # exec(cod, ['imagem_url'])['imagem_url']
+
+        nome_arquivo = f"temp/{self.codigo_produto}.jpg"
+
+        try:
+    
+            resposta = requests.get(url)
+        
+            if resposta.status_code == 200:
+        
+                with open(nome_arquivo, 'wb') as arquivo:
+                    arquivo.write(resposta.content)
+                print(f"Imagem salva como {nome_arquivo}")
+            else:
+                print(f"Erro ao baixar a imagem: {resposta.status_code}")
+        except Exception as e:
+            print(f"Ocorreu um erro: {e}")
+
+    def mostrar_imagem(self):
+        # Criação de uma nova janela para exibição
+        janela = tk.Toplevel()
+        janela.title(f'Imagem produto: {self.codigo_produto}')
+        janela.minsize(width=500, height=500)
+        janela.maxsize(width=500, height=500)
+
+        # Carregar a imagem com Pillow
+        image_path = f'temp/{self.codigo_produto}.jpg'
+        print(f"IMG path === {image_path}")
+        try:
+            img = Image.open(image_path)
+            img = img.resize((500, 500))
+            tk_image = ImageTk.PhotoImage(img)
+
+            # Criar um widget Label para exibir a imagem
+            label = tk.Label(janela, image=tk_image)
+            label.image = tk_image  # Preserva a referência
+            label.pack()
+
+        except FileNotFoundError as e:
+            janela.destroy()
+            self.baixar_imagem()
+            return self.mostrar_imagem()
+
+        except Exception as e:
+            print(f"Erro ao exibir a imagem: {e}")
+
+        
+    def limpar_imagens(self):
+        os.chdir('temp')
+        for imagem in os.listdir():
+            os.remove(imagem)
+        os.chdir('..')
+
+
+
+
+
+
 if __name__ == "__main__":
     cod = 'NBJ7016DP'
     # url = puxar_dados_api(cod, ['nome', 'marca', 'aplicacao', 'ean', 'ncm', 'peso'])
-    url = puxar_dados_api(cod, ['cod_marca'])
-    print(type(url))
+    # url = puxar_dados_api(cod, ['cod_marca'])
+    # print(type(url))
 
-    print(url)
+    # print(url)
+
+    app = ImagemProduto(codigo_produto='HG32810')
+    app.baixar_imagem()
+    app.mostrar_imagem()
+
+
+
