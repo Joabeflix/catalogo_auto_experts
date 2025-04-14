@@ -5,7 +5,7 @@ from ttkbootstrap.constants import *
 from utils.utils import texto_no_console, limpar_prompt, verificar_permissao_usuario, tela_aviso
 from models.integracao_gs import IntegracaoGS
 import os
-from models.api_max import ImagemProduto
+from models.tratamento_imagem import ImagemProduto
 
 integracao = IntegracaoGS(
     conta_de_servico_json=r'configs/conta_servico.json',
@@ -45,6 +45,9 @@ class Interface:
         self.codigo_produto = ttk.Entry(self.root, width=22)
         self.codigo_produto.place(x=10, y=600)
 
+        self.marca_produto = ttk.Entry(self.root, width=22)
+        self.marca_produto.place(x=100, y=600)
+
         self.botao_mostrar_imagem = ttk.Button(self.root, text='Ver Imagem', style='success-outline', command=lambda: self.mostrar_imagem_produto())
         self.botao_mostrar_imagem.place(x=260, y=600)
 
@@ -61,7 +64,7 @@ class Interface:
 
     def mostrar_imagem_produto(self):
         if self.codigo_produto.get():
-            app = ImagemProduto(codigo_produto=self.codigo_produto.get())
+            app = ImagemProduto(codigo_produto=self.codigo_produto.get(), marca_produto=self.marca_produto.get())
             app.mostrar_imagem()
     
 
@@ -173,6 +176,10 @@ class Interface:
 
             self.codigo_produto.delete(0, tk.END)
             self.codigo_produto.insert(0, valores[0])
+
+            self.marca_produto.delete(0, tk.END)
+            self.marca_produto.insert(0, valores[2])
+            
 
 
 

@@ -4,6 +4,7 @@ import os
 import tkinter as tk
 from PIL import Image, ImageTk
 from dotenv import load_dotenv
+from utils.utils import texto_no_console
 
 load_dotenv()
 
@@ -78,32 +79,33 @@ class FiltroJSON:
                 return f'"{item_filtro}" indisponível.'
         return retorno
     
-def acerto_codigo_produto(codigo_produto, indice=2):
-    print(indice)
-
+def acerto_codigo_produto(codigo_produto):
     texto_saida = str(codigo_produto).replace(' ', '')
 
-    print('Dentro do acerto')
-    print(f'código atual é {texto_saida}')
+    # Ordenados por tamanho decrescente
+    padroes = {
+        "NCDE": " ",
+        "NKF": " ",
+        "N": " ",
+        "MG": " ",
+        "HG": " ",
+        "AC": " ",
+        "C": "-",
+        "L": "-",
+        "P": "-"
+    }
+    for padrao in padroes.keys():
+        if texto_saida.startswith(padrao):
 
-    # Espaço após 2 letras
+            retorno = f'{padrao}{padroes.get(padrao)}{texto_saida[len(padrao):]}'
 
-    lista_padrao_2 = ['MG', 'HG', 'AC']
-    lista_padrao_3 = ['NKF']
-    lista_padrao_4 = ['NCDE']
+            texto_no_console([f'Código alterado de: {codigo_produto}', f'Código alterado para: {retorno}'])
 
-    if indice == 5:
-        return 'Sem formatação programada'
+            return retorno
 
-    if texto_saida[:indice] in eval(f'lista_padrao_{indice}'):
-        texto_saida = texto_saida.replace(texto_saida[:indice], f'{texto_saida[:indice]} ')
-        print(f'O código tratado é ::: {texto_saida}')
-        return texto_saida
-    
-    else:
-        print('dentro do else:')
-        indice+=1
-        return acerto_codigo_produto(codigo_produto, indice)
+
+    return 'Sem formatação programada'
+
     
 def puxar_dados_api(codigo_produto, dados_necessarios=[]):
 
@@ -177,69 +179,6 @@ def puxar_dados_api(codigo_produto, dados_necessarios=[]):
 
 
     return dict(lista_retorno)
-
-
-class ImagemProduto():
-    def __init__(self, codigo_produto=None):
-        self.codigo_produto = codigo_produto
-
-    def baixar_imagem(self):
-
-        url = puxar_dados_api(self.codigo_produto, ['imagem_url'])['imagem_url']
-        # exec(cod, ['imagem_url'])['imagem_url']
-
-        nome_arquivo = f"temp/{self.codigo_produto}.jpg"
-
-        try:
-    
-            resposta = requests.get(url)
-        
-            if resposta.status_code == 200:
-        
-                with open(nome_arquivo, 'wb') as arquivo:
-                    arquivo.write(resposta.content)
-                print(f"Imagem salva como {nome_arquivo}")
-            else:
-                print(f"Erro ao baixar a imagem: {resposta.status_code}")
-        except Exception as e:
-            print(f"Ocorreu um erro: {e}")
-
-    def mostrar_imagem(self):
-        # Criação de uma nova janela para exibição
-        janela = tk.Toplevel()
-        janela.title(f'Imagem produto: {self.codigo_produto}')
-        janela.minsize(width=500, height=500)
-        janela.maxsize(width=500, height=500)
-
-        # Carregar a imagem com Pillow
-        image_path = f'temp/{self.codigo_produto}.jpg'
-        print(f"IMG path === {image_path}")
-        try:
-            img = Image.open(image_path)
-            img = img.resize((500, 500))
-            tk_image = ImageTk.PhotoImage(img)
-
-            # Criar um widget Label para exibir a imagem
-            label = tk.Label(janela, image=tk_image)
-            label.image = tk_image  # Preserva a referência
-            label.pack()
-
-        except FileNotFoundError as e:
-            janela.destroy()
-            self.baixar_imagem()
-            return self.mostrar_imagem()
-
-        except Exception as e:
-            print(f"Erro ao exibir a imagem: {e}")
-
-        
-    def limpar_imagens(self):
-        os.chdir('temp')
-        for imagem in os.listdir():
-            os.remove(imagem)
-        os.chdir('..')
-
-
 
 
 
