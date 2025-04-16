@@ -49,7 +49,6 @@ class ImagemProduto():
 
                 if resposta.status_code == 200:
             
-            
                     with open(nome_arquivo, 'wb') as arquivo:
                         arquivo.write(resposta.content)
                     texto_no_console(f"Imagem salva como {nome_arquivo}")
