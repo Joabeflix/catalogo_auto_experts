@@ -46,8 +46,9 @@ class ImagemProduto():
             try:
         
                 resposta = requests.get(url)
-            
+
                 if resposta.status_code == 200:
+            
             
                     with open(nome_arquivo, 'wb') as arquivo:
                         arquivo.write(resposta.content)
