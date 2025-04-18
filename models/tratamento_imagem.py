@@ -96,6 +96,7 @@ class ImagemProduto():
 
         
     def limpar_imagens(self):
+        os.chdir('..')
         os.chdir('temp')
         for imagem in os.listdir():
             os.remove(imagem)
